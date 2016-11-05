@@ -9,7 +9,10 @@ class Csrf extends AnnotationBase {
   getCallbacks(routeClass) {
     var self = this;
     return {
-      prevalidation: function(csrfToken, _csrfToken) {
+      prevalidation: function(session, csrfToken, _csrfToken) {
+        if (typeof session !== 'object') {
+          throw Error('The CSRF module requires that you setup the session module.');
+        }
         if (typeof this.body === 'object' && typeof this.body.csrfToken === 'string') {
           csrfToken = this.body.csrfToken;
         }

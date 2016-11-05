@@ -168,12 +168,31 @@ describe('BlueGate CSRF', function() {
     });
     app.error(function() { error = this.error; });
     require('./bluegate-csrf.js')(app);
+    require('bluegate-class')(app, {
+      files: path.join(__dirname, '/test/**.js')
+    });
     return app.listen(3001).then(() => {
-      return Needle.getAsync('http://localhost:3001/link');
+      return Needle.getAsync('http://localhost:3001/link/action/token');
     }).then(function(response) {
       expect(response[0].statusCode).to.equal(400);
       expect(error instanceof Error).to.equal(true);
       expect(error.message).to.contain('session module');
+      return app.close();
+    });
+  });
+
+  it('will not give the session not loaded error on static files', function() {
+    let error;
+    let app = new BlueGate({
+      log: false
+    });
+    app.process('GET /assets/logo.png', function() { return new Buffer('test'); });
+    require('./bluegate-csrf.js')(app);
+    return app.listen(3002).then(() => {
+      return Needle.getAsync('http://localhost:3002/assets/logo.png');
+    }).then(function(response) {
+      expect(response[0].statusCode).to.equal(200);
+      expect(error instanceof Error).to.equal(false);
       return app.close();
     });
   });

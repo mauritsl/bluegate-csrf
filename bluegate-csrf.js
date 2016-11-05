@@ -21,16 +21,15 @@ module.exports = function(app, options) {
   // Register prevalidation hook.
   // This hook will calculate the CSRF token.
   app.prevalidation(function(session) {
-    if (typeof session !== 'object') {
-      throw Error('The CSRF module requires that you setup the session module.');
+    if (typeof session === 'object') {
+      let token = '0';
+      if (!session.empty()) {
+        token = session.getId().substring(0, 6);
+        // The session id is in base64 encoding. Replace characters that are not safe for use in URL's.
+        token = token.split('+').join('-').split('/').join('_').split('=').join();
+      }
+      this.setParameter('_csrfToken', token);
     }
-    let token = '0';
-    if (!session.empty()) {
-      token = session.getId().substring(0, 6);
-      // The session id is in base64 encoding. Replace characters that are not safe for use in URL's.
-      token = token.split('+').join('-').split('/').join('_').split('=').join();
-    }
-    this.setParameter('_csrfToken', token);
   });
 
   // Copy the calculated _csrfToken to csrfToken. The latter was used for token input before.
