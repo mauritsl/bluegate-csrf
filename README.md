@@ -12,13 +12,7 @@ This module requires writing routes using ES6 classes with the
 requires sessions using
 [BlueGate session](https://www.npmjs.com/package/bluegate-session).
 
-This module can protect forms and links against CSRF-attacks. The protection is
-only active for users with a session (i.e. authenticated users). Visitors without
-a session are not protected for performance reasons, because that will conflict
-with any form of page caching.
-The CSRF-token is based on the session id, but does not include the whole
-session id to avoid leaking it.
-See the
+This module can protect forms and links against CSRF-attacks. See the
 [OWASP site](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29)
 for more information about CSRF.
 
@@ -105,7 +99,17 @@ class LinkActionRoute {
 }
 ```
 
-Note that using GET requests for state changing requests is discouraged
-when using sensitive data. See the
-[OWASP site](https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet#Disclosure_of_Token_in_URL)
-for more information.
+## Security considerations
+
+The protection is only active for users with a session (i.e. authenticated users).
+Visitors without a session are not protected for performance reasons, because that will conflict
+with any form of page caching. It is however highly unlikely that anonymous requests
+involve state changing actions and thus require CSRF protection.
+
+The CSRF-token is based on the session id, but does not include the whole
+session id to avoid leaking it.
+
+Using GET requests for state changing requests is discouraged when using sensitive data,
+even when adding CSRF protection. This is because
+[disclosure of tokens](https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet#Disclosure_of_Token_in_URL)
+is more likely for GET requests.
