@@ -1,6 +1,6 @@
 {
   "name": "bluegate-csrf",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CSRF protection for BlueGate",
   "main": "bluegate-csrf.js",
   "scripts": {
